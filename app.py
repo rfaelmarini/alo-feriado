@@ -1,21 +1,27 @@
 import os
-from flask import Flask
+import connexion
 from flask_sqlalchemy import SQLAlchemy
+from flask import redirect
 
-app = Flask(__name__)
+
+os.environ['APP_SETTINGS'] = "config.DevelopmentConfig"
+os.environ['DATABASE_URL'] = "postgresql:///feriado_dev"
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+connex_app = connexion.App(__name__, specification_dir=basedir)
+
+app = connex_app.app
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 
-from models import Feriado
+connex_app.add_api('swagger.yaml')
 
 @app.route('/')
-def hello():
-    return "Hello World!"
-
-@app.route('/<name>')
-def hello_name(name):
-    return "Hello {}!".format(name)
+def index():
+    return redirect('/ui')
 
 if __name__ == '__main__':
     app.run()
