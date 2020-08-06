@@ -36,6 +36,20 @@ paths:
                     description: Feriado atualizado com sucesso
                 201:
                     description: Feriado registrado com sucesso
+        delete:
+            tags: [Feriados]
+            operationId: feriado.delete_municipal_state
+            summary: "Remover um feriado municipal ou um feriado estadual"
+            parameters:
+                - $ref: '#/parameters/ibge_code'
+                - $ref: '#/parameters/partial_date'
+            responses:
+                204:
+                    description: "Feriado removido com sucesso"
+                403:
+                    description: "Nao e possivel remover um feriado municipal em um estado ou um feriado estadual em um municipio"
+                404:
+                    description: "Feriado nao encontrado"
 parameters:
     ibge_code:
         name: "ibge_code"

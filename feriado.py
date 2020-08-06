@@ -43,7 +43,9 @@ def validate_ibge_code(ibge_code):
 
 def get_national_holiday(date):
     date = date.split('-')
-    del(date[0])
+    if len(date) == 3:
+        del(date[0])
+
     date = '-'.join(date)
     for feriado in FERIADOS_NACIONAIS:
         if feriado['date'] == date:
@@ -104,6 +106,12 @@ def fetch(ibge_code, date):
     if feriado is not None:
         return {'name': feriado.name}
 
+    if len(ibge_code) == 7:
+        ibge_code = ibge_code[:2]
+        feriado = Feriado.query.filter_by(ibge_code = ibge_code).filter_by(month = month).filter_by(day = day).first()
+        if feriado is not None:
+            return {'name': feriado.name}
+
     feriado = get_national_holiday(date)
     if feriado is not None:
         return feriado
@@ -157,3 +165,48 @@ def save_municipal_state(ibge_code, date, feriado):
             return make_response('Feriado registrado com sucesso', 201)
         except:
             abort(500, 'Ocorreu um erro inesperado')
+
+def delete_municipal_state(ibge_code, date):
+    if not validate_date(date):
+        abort(400, 'A data informada e invalida')
+
+    if not validate_ibge_code(ibge_code):
+        abort(400, 'O codigo do IBGE informado e invalido')
+
+    splited_date = date.split('-')
+    month = splited_date[0]
+    day = splited_date[1]
+
+    feriado = Feriado.query.filter_by(ibge_code = ibge_code).filter_by(month = month).filter_by(day = day).first()
+    if feriado is None:
+        if len(ibge_code) == 7:
+            ibge_code = ibge_code[:2]
+            feriado = Feriado.query.filter_by(ibge_code = ibge_code).filter_by(month = month).filter_by(day = day).first()
+            if feriado is not None:
+                abort(403, 'Nao e possivel remover um feriado estadual em um municipio')
+            else:
+                feriado = get_national_holiday(date)
+                if feriado is not None:
+                    abort(403, 'Feriado nacional nao pode ser removido')
+                else:
+                    abort(404, 'Feriado nao encontrado')
+        else:
+            feriado = get_national_holiday(date)
+            if feriado is not None:
+                abort(403, 'Feriado nacional nao pode ser removido')
+            else:
+                abort(404, 'Feriado nao encontrado')
+    else:
+        try:
+            db.session.delete(feriado)
+            db.session.commit()
+            return make_response('Feriado removido com sucesso', 204)
+        except:
+            abort(500, 'Ocorreu um erro inesperado')
+
+
+
+
+
+
+
