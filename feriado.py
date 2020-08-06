@@ -2,6 +2,8 @@ import pandas as pd
 from datetime import datetime, timedelta
 from flask import abort, make_response
 from models import Feriado
+from models import Feriado
+from app import db
 
 FERIADOS_NACIONAIS = [
   {'date': '01-01', 'name': 'Ano Novo'},
@@ -17,12 +19,13 @@ FERIADOS_NACIONAIS = [
 def normalize_date(date):
     date = date.split('-')
     if len(date) == 2:
-        now = datetime.datetime.now()
-        date.insert(0, now.year)
+        now = datetime.now()
+        date.insert(0, str(now.year))
 
     return '-'.join(date)
 
 def validate_date(date):
+    date = normalize_date(date)
     try:
         date = date.split('-')
         datetime(int(date[0]), int(date[1]), int(date[2]))
@@ -86,22 +89,25 @@ def get_holy_friday_date(easter_date):
     return date.strftime("%Y-%m-%d")
 
 def fetch(ibge_code, date):
-    date = normalize_date(date)
     if not validate_date(date):
         abort(400, 'A data informada e invalida')
 
     if not validate_ibge_code(ibge_code):
         abort(400, 'O codigo do IBGE informado e invalido')
 
-    feriado = Feriado.query.filter_by(ibge_code = ibge_code).filter_by(date = date).first()
+    splited_date = date.split('-')
+    year = splited_date[0]
+    month = splited_date[1]
+    day = splited_date[2]
+
+    feriado = Feriado.query.filter_by(ibge_code = ibge_code).filter_by(month = month).filter_by(day = day).first()
     if feriado is not None:
-        return feriado
+        return {'name': feriado.name}
 
     feriado = get_national_holiday(date)
     if feriado is not None:
         return feriado
 
-    year = date.split('-')[0]
     easter_date = get_easter_date(year)
     if date == easter_date:
         return {'name': 'Pascoa'}
@@ -117,3 +123,37 @@ def fetch(ibge_code, date):
 
     abort(404, 'Feriado nao encontrado')
 
+def save_municipal_state(ibge_code, date, feriado):
+    if not validate_date(date):
+        abort(400, 'A data informada e invalida')
+
+    if not validate_ibge_code(ibge_code):
+        abort(400, 'O codigo do IBGE informado e invalido')
+
+    name = feriado['name']
+
+    splited_date = date.split('-')
+    month = splited_date[0]
+    day = splited_date[1]
+
+    feriado = Feriado.query.filter_by(ibge_code = ibge_code).filter_by(month = month).filter_by(day = day).first()
+    if feriado is not None:
+        try:
+            feriado.name = name
+            db.session.commit()
+            return make_response('Feriado atualizado com sucesso', 200)
+        except:
+            abort(500, 'Ocorreu um erro inesperado')
+    else:
+        try:
+            feriado = Feriado(
+                ibge_code=ibge_code,
+                name=name,
+                month=month,
+                day=day
+            )
+            db.session.add(feriado)
+            db.session.commit()
+            return make_response('Feriado registrado com sucesso', 201)
+        except:
+            abort(500, 'Ocorreu um erro inesperado')

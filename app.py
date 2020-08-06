@@ -3,10 +3,6 @@ import connexion
 from flask_sqlalchemy import SQLAlchemy
 from flask import redirect
 
-
-os.environ['APP_SETTINGS'] = "config.DevelopmentConfig"
-os.environ['DATABASE_URL'] = "postgresql:///feriado_dev"
-
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 connex_app = connexion.App(__name__, specification_dir=basedir)

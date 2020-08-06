@@ -6,12 +6,14 @@ class Feriado(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ibge_code = db.Column(db.Integer)
     name = db.Column(db.String())
-    date = db.Column(db.DateTime)
+    month = db.Column(db.Integer)
+    day = db.Column(db.Integer)
 
-    def __init__(self, ibge_code, name, date):
+    def __init__(self, ibge_code, name, month, day):
         self.ibge_code = ibge_code
         self.name = name
-        self.date = date
+        self.month = month
+        self.day = day
 
     def __repr__(self):
         return '<id {}>'.format(self.id)

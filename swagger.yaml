@@ -23,21 +23,52 @@ paths:
                         $ref: "#/definitions/Feriado"
                 404:
                     description: "Nenhum feriado encontrado para a data e região informados"
+        put:
+            tags: [Feriados]
+            operationId: feriado.save_municipal_state
+            summary: "Registrar feriado de uma determinada data de uma região"
+            parameters:
+                - $ref: '#/parameters/ibge_code'
+                - $ref: '#/parameters/partial_date'
+                - $ref: '#/parameters/feriado'
+            responses:
+                200:
+                    description: Feriado atualizado com sucesso
+                201:
+                    description: Feriado registrado com sucesso
 parameters:
     ibge_code:
         name: "ibge_code"
         description: "Código do IBGE (referente a uma região)"
         in: path
         type: string
-        required: true
+        required: True
         pattern: "^[0-9]{2}$|^[0-9]{7}$"
     date:
         name: "date"
         description: "Data no formato AAAA-MM-DD ou MM-DD"
         in: path
         type: string
-        required: true
-        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$|^[0-9]{2}-[0-9]{2}$"
+        required: True
+        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    partial_date:
+        name: "date"
+        description: "Data no formato MM-DD"
+        in: path
+        type: string
+        required: True
+        pattern: "^[0-9]{2}-[0-9]{2}$"
+    feriado:
+        name: "feriado"
+        description: "Feriado para registro"
+        in: body
+        required: True
+        schema:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: "Nome do feriado para registro"
 definitions:
     Feriado:
         type: object
