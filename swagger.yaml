@@ -50,6 +50,98 @@ paths:
                     description: "Nao e possivel remover um feriado municipal em um estado ou um feriado estadual em um municipio"
                 404:
                     description: "Feriado nao encontrado"
+    /feriados/{ibge_code}/pascoa/:
+        put:
+            tags: [Feriados]
+            operationId: feriado.save_easter
+            summary: "Registrar feriado de Pascoa"
+            parameters:
+                - $ref: '#/parameters/ibge_code'
+            responses:
+                200:
+                    description: Feriado atualizado com sucesso
+                201:
+                    description: Feriado registrado com sucesso
+        delete:
+            tags: [Feriados]
+            operationId: feriado.delete_easter
+            summary: "Remover feriado de Pascoa"
+            parameters:
+                - $ref: '#/parameters/ibge_code'
+            responses:
+                204:
+                    description: "Feriado removido com sucesso"
+                404:
+                    description: "Feriado nao encontrado"
+    /feriados/{ibge_code}/carnaval/:
+        put:
+            tags: [Feriados]
+            operationId: feriado.save_carnival
+            summary: "Registrar feriado de Carnaval"
+            parameters:
+                - $ref: '#/parameters/ibge_code'
+            responses:
+                200:
+                    description: Feriado atualizado com sucesso
+                201:
+                    description: Feriado registrado com sucesso
+        delete:
+            tags: [Feriados]
+            operationId: feriado.delete_carnival
+            summary: "Remover feriado de Carnaval"
+            parameters:
+                - $ref: '#/parameters/ibge_code'
+            responses:
+                204:
+                    description: "Feriado removido com sucesso"
+                404:
+                    description: "Feriado nao encontrado"
+    /feriados/{ibge_code}/corpus-christi/:
+        put:
+            tags: [Feriados]
+            operationId: feriado.save_corpus_christi
+            summary: "Registrar feriado de Corpus Christi"
+            parameters:
+                - $ref: '#/parameters/ibge_code'
+            responses:
+                200:
+                    description: Feriado atualizado com sucesso
+                201:
+                    description: Feriado registrado com sucesso
+        delete:
+            tags: [Feriados]
+            operationId: feriado.delete_corpus_christi
+            summary: "Remover feriado de Corpus Christi"
+            parameters:
+                - $ref: '#/parameters/ibge_code'
+            responses:
+                204:
+                    description: "Feriado removido com sucesso"
+                404:
+                    description: "Feriado nao encontrado"
+    /feriados/{ibge_code}/sexta-feira-santa/:
+        put:
+            tags: [Feriados]
+            operationId: feriado.save_holy_friday
+            summary: "Registrar feriado de Sexta-feira Santa"
+            parameters:
+                - $ref: '#/parameters/ibge_code'
+            responses:
+                200:
+                    description: Feriado atualizado com sucesso
+                201:
+                    description: Feriado registrado com sucesso
+        delete:
+            tags: [Feriados]
+            operationId: feriado.delete_holy_friday
+            summary: "Remover feriado de Sexta-feira Santa"
+            parameters:
+                - $ref: '#/parameters/ibge_code'
+            responses:
+                204:
+                    description: "Feriado removido com sucesso"
+                404:
+                    description: "Feriado nao encontrado"
 parameters:
     ibge_code:
         name: "ibge_code"

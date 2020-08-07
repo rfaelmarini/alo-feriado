@@ -131,19 +131,7 @@ def fetch(ibge_code, date):
 
     abort(404, 'Feriado nao encontrado')
 
-def save_municipal_state(ibge_code, date, feriado):
-    if not validate_date(date):
-        abort(400, 'A data informada e invalida')
-
-    if not validate_ibge_code(ibge_code):
-        abort(400, 'O codigo do IBGE informado e invalido')
-
-    name = feriado['name']
-
-    splited_date = date.split('-')
-    month = splited_date[0]
-    day = splited_date[1]
-
+def save(ibge_code, month, day, name):
     feriado = Feriado.query.filter_by(ibge_code = ibge_code).filter_by(month = month).filter_by(day = day).first()
     if feriado is not None:
         try:
@@ -166,18 +154,28 @@ def save_municipal_state(ibge_code, date, feriado):
         except:
             abort(500, 'Ocorreu um erro inesperado')
 
-def delete_municipal_state(ibge_code, date):
+def save_municipal_state(ibge_code, date, feriado):
     if not validate_date(date):
         abort(400, 'A data informada e invalida')
 
     if not validate_ibge_code(ibge_code):
         abort(400, 'O codigo do IBGE informado e invalido')
 
+    name = feriado['name']
+
     splited_date = date.split('-')
     month = splited_date[0]
     day = splited_date[1]
 
-    feriado = Feriado.query.filter_by(ibge_code = ibge_code).filter_by(month = month).filter_by(day = day).first()
+    return save(ibge_code, month, day, name)
+
+def delete(ibge_code, month, day, name):
+    date = month + '-' + day
+    if name is None:
+        feriado = Feriado.query.filter_by(ibge_code = ibge_code).filter_by(month = month).filter_by(day = day).first()
+    else:
+        feriado = Feriado.query.filter_by(ibge_code = ibge_code).filter_by(month = month).filter_by(day = day).filter_by(name = name).first()
+
     if feriado is None:
         if len(ibge_code) == 7:
             ibge_code = ibge_code[:2]
@@ -204,9 +202,109 @@ def delete_municipal_state(ibge_code, date):
         except:
             abort(500, 'Ocorreu um erro inesperado')
 
+def delete_municipal_state(ibge_code, date):
+    if not validate_date(date):
+        abort(400, 'A data informada e invalida')
 
+    if not validate_ibge_code(ibge_code):
+        abort(400, 'O codigo do IBGE informado e invalido')
 
+    splited_date = date.split('-')
+    month = splited_date[0]
+    day = splited_date[1]
 
+    return delete(ibge_code, month, day, None)
 
+def save_easter(ibge_code):
+    if not validate_ibge_code(ibge_code):
+        abort(400, 'O codigo do IBGE informado e invalido')
 
+    now = datetime.now()
+    date = get_easter_date(now.year)
+    splited_date = date.split('-')
+    month = splited_date[1]
+    day = splited_date[2]
+    return save(ibge_code, month, day, "Pascoa")
 
+def delete_easter(ibge_code):
+    if not validate_ibge_code(ibge_code):
+        abort(400, 'O codigo do IBGE informado e invalido')
+
+    now = datetime.now()
+    date = get_easter_date(now.year)
+    splited_date = date.split('-')
+    month = splited_date[1]
+    day = splited_date[2]
+    return delete(ibge_code, month, day, "Pascoa")
+
+def save_carnival(ibge_code):
+    if not validate_ibge_code(ibge_code):
+        abort(400, 'O codigo do IBGE informado e invalido')
+
+    now = datetime.now()
+    date = get_easter_date(now.year)
+    date = get_carnival_date(date)
+    splited_date = date.split('-')
+    month = splited_date[1]
+    day = splited_date[2]
+    return save(ibge_code, month, day, "Carnaval")
+
+def delete_carnival(ibge_code):
+    if not validate_ibge_code(ibge_code):
+        abort(400, 'O codigo do IBGE informado e invalido')
+
+    now = datetime.now()
+    date = get_easter_date(now.year)
+    date = get_carnival_date(date)
+    splited_date = date.split('-')
+    month = splited_date[1]
+    day = splited_date[2]
+    return delete(ibge_code, month, day, "Carnaval")
+
+def save_corpus_christi(ibge_code):
+    if not validate_ibge_code(ibge_code):
+        abort(400, 'O codigo do IBGE informado e invalido')
+
+    now = datetime.now()
+    date = get_easter_date(now.year)
+    date = get_corpus_christi_date(date)
+    splited_date = date.split('-')
+    month = splited_date[1]
+    day = splited_date[2]
+    return save(ibge_code, month, day, "Corpus Christi")
+
+def delete_corpus_christi(ibge_code):
+    if not validate_ibge_code(ibge_code):
+        abort(400, 'O codigo do IBGE informado e invalido')
+
+    now = datetime.now()
+    date = get_easter_date(now.year)
+    date = get_corpus_christi_date(date)
+    splited_date = date.split('-')
+    month = splited_date[1]
+    day = splited_date[2]
+    return delete(ibge_code, month, day, "Corpus Christi")
+
+def save_holy_friday(ibge_code):
+    if not validate_ibge_code(ibge_code):
+        abort(400, 'O codigo do IBGE informado e invalido')
+
+    now = datetime.now()
+    date = get_easter_date(now.year)
+    date = get_holy_friday_date(date)
+    splited_date = date.split('-')
+    month = splited_date[1]
+    day = splited_date[2]
+    return save(ibge_code, month, day, "Sexta-feira Santa")
+
+def delete_holy_friday(ibge_code):
+    if not validate_ibge_code(ibge_code):
+        abort(400, 'O codigo do IBGE informado e invalido')
+
+    now = datetime.now()
+    date = get_easter_date(now.year)
+    date = get_holy_friday_date(date)
+    splited_date = date.split('-')
+    month = splited_date[1]
+    day = splited_date[2]
+    return delete(ibge_code, month, day, "Sexta-feira Santa")
